@@ -4,15 +4,21 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo/metro-config": "^54.0.2",
+    "babel-preset-expo": "^54.0.0",
     "expo": "~54.0.13",
     "expo-status-bar": "~3.0.8",
+    "nativewind": "^2.0.11",
+    "prettier-plugin-tailwindcss": "^0.5.14",
     "react": "19.1.0",
-    "react-native": "0.81.4"
+    "react-native": "0.81.4",
+    "react-native-safe-area-context": "^5.4.0",
+    "tailwindcss": "^3.3.0"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
