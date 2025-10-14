@@ -1,0 +1,83 @@
+// AppTabs.tsx
+import React from "react";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import {
+  faHome,
+  faGrip,
+  faShoppingBag,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
+
+import HomeScreen from "../screens/app/Home";
+import ProductsScreen from "../screens/app/Products";
+import CategoriesScreen from "../screens/app/Categories";
+import {Alert, View} from "react-native";
+
+const Tab = createBottomTabNavigator();
+
+// just a placeholder component for the Logout tab
+function Empty() {
+  return <View />;
+}
+
+export default function AppTabs() {
+  return (
+    <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
+      <Tab.Navigator
+        initialRouteName="Home"
+        screenOptions={({ route }) => ({
+          headerShown: false,
+          tabBarHideOnKeyboard: true,
+          tabBarActiveTintColor: "#004CFF",
+          tabBarInactiveTintColor: "#8E8E93",
+          tabBarIcon: ({ focused, size , color }) => {
+            const icon =
+              route.name === "Home"
+                ? faHome
+                : route.name === "Products"
+                  ? faShoppingBag
+                  : faGrip;
+            return (
+              <FontAwesomeIcon
+                color={color}
+                icon={icon}
+                size={18}
+              />
+            );
+          },
+        })}
+      >
+        <Tab.Screen name="Home" component={HomeScreen} />
+        <Tab.Screen name="Products" component={ProductsScreen} />
+        <Tab.Screen name="Categories" component={CategoriesScreen} />
+        {/* Logout tab (disable immediate navigation just functionality of clearing session and reset to login) */}
+        <Tab.Screen
+          name="Logout"
+          component={Empty} // placeholder component
+          options={{
+            tabBarLabel: "Logout",
+            tabBarIcon: ({ color, size }) => (
+              <FontAwesomeIcon
+                icon={faRightFromBracket}
+                size={18}
+                color={color}
+              />
+            ),
+          }}
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault(); 
+              console.log("logout pressed");
+              Alert.alert("Logout", "Are you sure you want to logout?", [
+                { text: "Cancel", style: "cancel" },
+                { text: "Logout", onPress: () => console.log("User logged out") },
+              ]);
+            },
+          }}
+        />
+      </Tab.Navigator>
+    </SafeAreaView>
+  );
+}
