@@ -7,7 +7,7 @@ import AuthStack from './AuthStack';
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
-  const signedIn = true; // just dummy flag for testing purposes
+  const signedIn = false; // just dummy flag for testing purposes
 
   return (
     <NavigationContainer theme={DefaultTheme}>
