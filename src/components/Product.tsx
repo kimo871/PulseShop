@@ -16,10 +16,10 @@ type ProductProps = {
     availabilityStatus:string;
 }
 
-export default function Product({product}:{product:ProductProps}) {
+export default function Product({product,width}:{product:ProductProps,width?:string}) {
   return (
     <View
-      className=" bg-white rounded-xl shadow-lg shadow-neutral-200/80 border border-neutral-200 p-0 w-[48%] mb-4"
+      className={` bg-white rounded-xl shadow-lg shadow-neutral-200/80 border border-neutral-200 p-0 ${width ? width : 'w-[49%]' } mb-4`}
     >
       {/* Image Container */}
       <View className="relative rounded-xl w-full h-36 overflow-hidden mb-3">
