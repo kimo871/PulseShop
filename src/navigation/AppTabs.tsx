@@ -8,6 +8,7 @@ import {
   faGrip,
   faShoppingBag,
   faRightFromBracket,
+  faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 
 import HomeScreen from "../screens/app/Home";
@@ -30,28 +31,28 @@ export default function AppTabs() {
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarHideOnKeyboard: true,
-          tabBarActiveTintColor: "#004CFF",
+          tabBarActiveTintColor: "#4D7380",
           tabBarInactiveTintColor: "#8E8E93",
           tabBarIcon: ({ focused, size , color }) => {
             const icon =
               route.name === "Home"
                 ? faHome
-                : route.name === "Products"
-                  ? faShoppingBag
+                : route.name === "Favorites"
+                  ? faHeart
                   : faGrip;
             return (
               <FontAwesomeIcon
                 color={color}
                 icon={icon}
-                size={18}
+                size={20}
               />
             );
           },
         })}
       >
         <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Products" component={ProductsScreen} />
         <Tab.Screen name="Categories" component={CategoriesScreen} />
+        <Tab.Screen name="Favorites" component={ProductsScreen} />
         {/* Logout tab (disable immediate navigation just functionality of clearing session and reset to login) */}
         <Tab.Screen
           name="Logout"
