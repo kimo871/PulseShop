@@ -1,49 +1,12 @@
 import { View, Image, ScrollView, TouchableOpacity } from "react-native";
 import CustomText from "../../components/ui/CustomText";
-import Product from "../../components/Product";
-const Categories = {
-  // 0: {
-  //   id: 0,
-  //   name: "Beauty",
-  //   thumbnail: BEAUTY,
-  // },
-  // 1: {
-  //   id: 1,
-  //   name: "Fragrances",
-  //   thumbnail: FRAGNACES,
-  // },
-  2: {
-    id: 2,
-    name: "Furniture",
-    thumbnail: require("../../../assets/icons/furniture.png"),
-    selected: true,
-  },
-  3: {
-    id: 3,
-    name: "Groceries",
-    thumbnail: require("../../../assets/icons/groceries.png"),
-  },
-  4: {
-    id: 4,
-    name: "Home Decoration",
-    thumbnail: require("../../../assets/icons/home.png"),
-  },
-  5: {
-    id: 5,
-    name: "Kitchen Accessories",
-    thumbnail: require("../../../assets/icons/kitchen-room.png"),
-  },
-  6: {
-    id: 6,
-    name: "Laptops",
-    thumbnail: require("../../../assets/icons/laptop.png"),
-  },
-  7: {
-    id: 7,
-    name: "Men's Shirts",
-    thumbnail: require("../../../assets/icons/t-shirt.png"),
-  },
-};
+import { useQuery } from "@tanstack/react-query";
+import { categoriesApi } from "../../api/categories";
+import { useEffect, useState } from "react";
+import { productsApi } from "../../api/products";
+import { categoryIcons } from "../../utils/icons/categoryIcons";
+import ProductSkeleton from "../../components/ui/product/ProductSkeleton";
+import Product from "../../components/ui/product/Product";
 
 const DummyProduct = {
   title: "Modern Ergonomic Chair",
@@ -59,6 +22,42 @@ const DummyProduct = {
 };
 
 export default function CategoriesScreen() {
+  // state for tracking selected category
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  // query for getting categories
+  const {
+    data: categoriesData,
+    isLoading: loadingCategories,
+    error: errorCategories,
+  } = useQuery({
+    queryKey: ["categories"],
+    queryFn: categoriesApi.getCategroies,
+  });
+  // if (categoriesData) {
+  //   console.log(categoriesData);
+  // }
+  if (errorCategories) {
+    console.log(errorCategories);
+  }
+
+  useEffect(() => {
+    if (categoriesData && categoriesData.length > 0 && !selectedCategory) {
+      setSelectedCategory(categoriesData[0]?.slug);
+    }
+  }, [categoriesData, selectedCategory]);
+  // query for getting products by selected category section
+  const {
+    data: productsData,
+    isLoading: loadingProducts,
+    error: errorProducts,
+  } = useQuery({
+    queryKey: ["productsByCategory", selectedCategory],
+    queryFn: () => productsApi.getProductsByCategory(selectedCategory),
+    enabled: !!selectedCategory,
+  });
+  if (productsData) {
+    console.log(productsData);
+  }
   return (
     <ScrollView
       contentContainerStyle={{
@@ -114,7 +113,7 @@ export default function CategoriesScreen() {
                 All Categories
               </CustomText>
               <CustomText className="text-neutral-500 font-inter-regular text-sm mt-1">
-                {Object.values(Categories).length} categories available
+                {categoriesData?.length || 0} categories available
               </CustomText>
             </View>
             <TouchableOpacity className="flex-row items-center">
@@ -135,39 +134,52 @@ export default function CategoriesScreen() {
               gap: 20,
             }}
           >
-            {Object.values(Categories).map((item, i) => {
-              return (
-                <TouchableOpacity
-                  key={item.id}
-                  className="flex-col items-center active:scale-95"
-                  style={{ width: 80 }}
-                >
-                  {/* Enhanced Category Card */}
-                  <View
-                    className={`p-4 rounded-2xl  w-16 h-16 border bg-white ${item?.selected ? "border-4 border-[#4D7380]" : "border-neutral-200"}  items-center justify-center shadow-sm shadow-neutral-200`}
+            {Array.isArray(categoriesData) &&
+              categoriesData.map((item, i) => {
+                // derive a safe key for categoryIcons and whether this item is selected
+                const iconKey = (item?.name ?? "")
+                  .toLowerCase()
+                  .replace(/\s+/g, "-") as keyof typeof categoryIcons;
+                const isSelected =
+                  (item?.slug ?? "").toLowerCase() ===
+                  (selectedCategory ?? "").toLowerCase();
+                // fallback image if icon not found
+                const iconSource =
+                  categoryIcons[iconKey] ??
+                  require("../../../assets/icons/categories/placeholder.png");
+
+                return (
+                  <TouchableOpacity
+                    key={i}
+                    className="flex-col items-center active:scale-95"
+                    style={{ width: 80 }}
+                    onPress={() => setSelectedCategory(item?.slug ?? "")}
                   >
-                    <Image
-                      source={item?.thumbnail}
-                      resizeMode="contain"
-                      className="w-8 h-8"
-                      style={{ width: 32, height: 32 }}
-                    />
-                  </View>
-                  <CustomText
-                    numberOfLines={2}
-                    className="text-neutral-800 font-inter-medium text-xs leading-4 text-center mt-3"
-                  >
-                    {item?.name}
-                  </CustomText>
-                </TouchableOpacity>
-              );
-            })}
+                    {/* Category Card */}
+                    <View
+                      className={`p-4 rounded-2xl  w-16 h-16 border bg-white ${isSelected ? "border-4 border-[#4D7380]" : "border-neutral-200"}  items-center justify-center shadow-sm shadow-neutral-200`}
+                    >
+                      <Image
+                        source={iconSource}
+                        resizeMode="contain"
+                        className="w-8 h-8"
+                        style={{ width: 32, height: 32 }}
+                      />
+                    </View>
+                    <CustomText
+                      numberOfLines={2}
+                      className="text-neutral-800 font-inter-medium text-xs leading-4 text-center mt-3"
+                    >
+                      {item?.name}
+                    </CustomText>
+                  </TouchableOpacity>
+                );
+              })}
           </ScrollView>
         </View>
-
         {/* Products Section */}
         <View className="mt-0 w-full   ">
-          {/* Products Header with Filter */}
+          {/* Products Header  */}
           <View className="flex-row justify-between items-center mb-6 ">
             <View>
               <CustomText className="text-neutral-800 font-inter-black text-xl">
@@ -177,19 +189,24 @@ export default function CategoriesScreen() {
                 Handpicked items just for you
               </CustomText>
             </View>
-            {/* <TouchableOpacity className="flex-row items-center bg-white rounded-xl px-4 py-2 border border-neutral-200 shadow-sm">
-      <CustomText className="text-neutral-600 mr-2">Filter</CustomText>
-      <CustomText className="text-neutral-400 text-lg">⌄</CustomText>
-    </TouchableOpacity> */}
           </View>
 
           {/* Enhanced Products Grid */}
           <View className="pb-32 w-full flex-row flex-wrap gap-2 justify-between px-2  ">
-            {Array.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).map((i) => {
-              return (
-                <Product width="w-[48%]" product={{ id: i, ...DummyProduct }} />
-              );
-            })}
+            {loadingProducts ? (
+              <View className="flex-row flex-wrap justify-between">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <ProductSkeleton key={i} />
+                ))}
+              </View>
+            ) : (
+              <View className="flex-row flex-wrap justify-between w-full">
+                {Array.isArray(productsData?.products) &&
+                  productsData?.products?.map((product:any) => (
+                    <Product key={product.id} product={product} />
+                  ))}
+              </View>
+            )}
           </View>
         </View>
       </View>
