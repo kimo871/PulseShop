@@ -12,8 +12,10 @@ export const productsApi = {
   getProductById: (id: string) =>
     fetch(`${BASE_URL}/products/${id}`).then((res) => res.json()),
 
-  getProductsByCategory: (category: string) =>
-    fetch(`${BASE_URL}/products/category/${category}`).then((res) =>
-      res.json()
-    ),
+  getProductsByCategory: async (category: string) => {
+    const res = await fetch(`${BASE_URL}/products/category/${category}`).then(
+      (res) => res.json()
+    );
+    return res;
+  },
 };
