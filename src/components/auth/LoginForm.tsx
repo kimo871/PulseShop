@@ -9,7 +9,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import CustomText from "../ui/CustomText";
 import { useDispatch, useSelector } from "react-redux";
-import { loginFailure, loginStart, loginSuccess } from "../../store/slices/authSlice";
+import {
+  loginFailure,
+  loginStart,
+  loginSuccess,
+} from "../../store/slices/authSlice";
 import { MmkvStorage } from "../../core/storage";
 export default function LoginForm() {
   const insets = useSafeAreaInsets(); // prevent elemnets from overlapping bottom phone controls'
@@ -41,10 +45,16 @@ export default function LoginForm() {
             gender: data.gender,
             image: data.image,
           },
-          token: data.token,
-        }),
+          token: data.accessToken,
+        })
       );
-      MmkvStorage.setItem("USER_TOKEN",data?.token)
+      MmkvStorage.setItem("USER_TOKEN", data.accessToken);
+      // Immediately verify it was stored
+      const storedToken = MmkvStorage.getItem("USER_TOKEN");
+      console.log(
+        "✅ Immediately after storage - Token retrieved:",
+        storedToken
+      );
       navigation.navigate("App");
     },
     onError: (error: Error) => {

@@ -18,6 +18,7 @@ export const authApi = {
         },
       });
       const data = await response.json();
+      console.log(data)
       if (!response.ok) {
         if (response.status === 401) {
           MmkvStorage.clearItems(["USER_TOKEN"]);
@@ -26,6 +27,7 @@ export const authApi = {
       }
       return data;
     } catch (err) {
+      console.log(err)
       throw new Error(
         err instanceof Error
           ? err.message

@@ -56,7 +56,6 @@ export default function AppTabs() {
         >
           <Tab.Screen name="Home" component={HomeScreen} />
           <Tab.Screen name="Categories" component={CategoriesScreen} />
-          <Tab.Screen name="Favorites" component={ProductsScreen} />
           {/* Logout tab (disable immediate navigation just functionality of clearing session and reset to login) */}
           <Tab.Screen
             name="Logout"
