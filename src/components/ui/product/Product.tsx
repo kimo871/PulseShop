@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { TouchableOpacity, View, Image } from "react-native";
+import { faStar, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import CustomText from "../CustomText";
-import { faHeart, faStar, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 
 type ProductProps = {
   id: number;
