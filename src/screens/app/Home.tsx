@@ -1,29 +1,35 @@
 import { View, Image, TouchableOpacity, ScrollView } from "react-native";
 import CustomText from "../../components/ui/CustomText";
 import CustomTextInput from "../../components/ui/CustomeTextInput";
-import {
-  faHeart,
-  faSearch,
-  faStar,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Product from "../../components/Product";
-
-const DummyProduct = {
-  title: "Modern Ergonomic Chair",
-  category: "FURNITURE",
-  rating: 4.8,
-  thumbnail:
-    "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
-  description: "Luxury executive arm chair with premium finish",
-  stock: 32,
-  discountPercentage: 10,
-  price: 100,
-  availabilityStatus: "In Stock",
-};
+import { useQuery } from "@tanstack/react-query";
+import { productsApi } from "../../api/products";
+import { useEffect, useState } from "react";
 
 export default function HomeScreen() {
+  const [searchTerm,setSearchTerm] = useState("");
+  const [deboucedSearch,setDebouncedSearch] = useState("");
+
+  useEffect(()=>{
+    const timer = setTimeout(()=>setDebouncedSearch(searchTerm.trim()),200)
+    return ()=> clearTimeout(timer)
+  },[searchTerm])
+
+  // fetching products with various states handled by react-query
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["products", deboucedSearch],
+    queryFn: () => productsApi.getProducts(deboucedSearch),
+  });
+  // debugging
+  if (data) {
+    console.log("============================")
+    console.log(data);
+  }
+  // debugging
+  if(error){
+    console.log(error)
+  }
   return (
     <ScrollView
       contentContainerStyle={{
@@ -73,8 +79,8 @@ export default function HomeScreen() {
         <View>
           <CustomTextInput
             icon={faSearch}
-            value={""}
-            onChangeText={() => {}}
+            value={searchTerm}
+            onChangeText={setSearchTerm}
             placeholderTextColor="#9CA3AF"
             placeholder="Search Product Name.."
             className="text-black  p-3 rounded-lg"
@@ -86,12 +92,27 @@ export default function HomeScreen() {
             All Products
           </CustomText>
           <View className="flex-row gap-x-1 gap-y-2 flex-wrap justify-between">
-          {Array.from([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]).map((i) => {
-            return <Product key={i} product={{ id: i, ...DummyProduct }} />;
-          })}
+             {isLoading ? (
+            <View className="flex-row flex-wrap justify-between">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
+            </View>
+          ) : (
+            <View className="flex-row flex-wrap justify-between w-full">
+              {Array.isArray(data?.products) && data?.products?.map((product) => (
+                <Product key={product.id} product={product} />
+              ))}
+            </View>
+          )}
           </View>
         </View>
       </View>
     </ScrollView>
   );
 }
+
+// Skeleton component
+const ProductSkeleton = () => (
+  <View className="w-[48%] mb-4 bg-gray-200 rounded-lg h-40 animate-pulse" />
+);

@@ -19,7 +19,7 @@ type ProductProps = {
 export default function Product({product,width}:{product:ProductProps,width?:string}) {
   return (
     <View
-      className={` bg-white rounded-xl shadow-lg shadow-neutral-200/80 border border-neutral-200 p-0 ${width ? width : 'w-[49%]' } mb-4`}
+      className={` bg-white rounded-xl shadow-lg shadow-neutral-200/80 border border-neutral-200 p-0 ${width ? width : 'w-[49%]' } mb-4 `}
     >
       {/* Image Container */}
       <View className="relative rounded-xl w-full h-36 overflow-hidden mb-3">
@@ -28,21 +28,21 @@ export default function Product({product,width}:{product:ProductProps,width?:str
             uri: `${product?.thumbnail}`,
           }}
           resizeMode="cover"
-          className="w-full h-full rounded-xl"
+          className="w-full h-full rounded-xl mt-2"
         />
 
         {/* Favorite Button */}
-        <TouchableOpacity className="absolute top-2 right-2 bg-white/90 w-6 h-6 rounded-full items-center justify-center shadow-sm">
+        {/* <TouchableOpacity className="absolute top-2 right-2 bg-white/90 w-6 h-6 rounded-full items-center justify-center shadow-sm">
           <FontAwesomeIcon color="#64748b" icon={faHeart} size={14} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Product Content */}
       <View className="space-y-2 p-2">
         {/* Category Tag */}
         <View className="flex-row justify-between items-start">
-          <View className="bg-[#4D7380] px-2 py-1 rounded-md">
-            <CustomText className="text-white font-inter-medium text-[10px]">
+          <View className="bg-[#4D7380] px-2 py-1 rounded-md flex-shrink mr-2 max-w-[90%]">
+            <CustomText  numberOfLines={1}  className="text-white font-inter-medium text-[10px]">
               {product?.category.toUpperCase()}
             </CustomText>
           </View>
@@ -59,7 +59,7 @@ export default function Product({product,width}:{product:ProductProps,width?:str
           <CustomText numberOfLines={2} className="text-neutral-800 font-inter-bold text-base leading-5">
             {product?.title} 
           </CustomText>
-          <CustomText className="text-neutral-500 font-inter-regular text-sm leading-4">
+          <CustomText numberOfLines={2} className="text-neutral-500 font-inter-regular text-sm leading-4">
             {product?.description}
           </CustomText>
         </View>
