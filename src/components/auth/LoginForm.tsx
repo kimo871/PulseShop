@@ -1,10 +1,10 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useMutation } from "@tanstack/react-query";
 import { authApi } from "../../api/auth";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { ScrollView, TextInput, TouchableOpacity, View } from "react-native";
+import { TextInput, TouchableOpacity, View } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import CustomText from "../ui/CustomText";
@@ -19,7 +19,6 @@ export default function LoginForm() {
   const insets = useSafeAreaInsets(); // prevent elemnets from overlapping bottom phone controls'
   type RootStackParamList = {
     Home: undefined;
-    // add other routes here as needed
   };
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -77,67 +76,59 @@ export default function LoginForm() {
 
   return (
     <View className="flex-1">
-      <ScrollView
-        contentContainerStyle={{
-          paddingBottom: insets.bottom + 350,
-          flexGrow: 1,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="space-y-6 flex-1 py-2 px-2">
-          {/* Error Message */}
-          {error ? (
-            <View className="p-2  bg-red-50 border border-red-200 rounded-lg flex flex-row gap-2 items-center">
-              <FontAwesomeIcon color="red" icon={faTriangleExclamation} />
-              <CustomText className="text-red-600 text-sm mb-1">
-                {error}
-              </CustomText>
-            </View>
-          ) : null}
-
-          {/* Username/Email Field */}
-          <View className="space-y-2">
-            <CustomText className="font-inter-bold  text-neutral-500">
-              Username or email
+      <View className="space-y-6 flex-1 py-2 px-2">
+        {/* Error Message */}
+        {error ? (
+          <View className="p-2  bg-red-50 border border-red-200 rounded-lg flex flex-row gap-2 items-center">
+            <FontAwesomeIcon color="red" icon={faTriangleExclamation} />
+            <CustomText className="text-red-600 text-sm mb-1">
+              {error}
             </CustomText>
-            <TextInput
-              value={username}
-              onChangeText={setUsername}
-              placeholderTextColor="#9CA3AF"
-              placeholder="Enter your username or email"
-              className="border border-neutral-300 text-black bg-gray-100 p-3 rounded-lg"
-            />
           </View>
+        ) : null}
 
-          {/* Password Field */}
-          <View className="space-y-2">
-            <CustomText className="font-inter-bold text-neutral-500">
-              Password
-            </CustomText>
-            <TextInput
-              value={password}
-              onChangeText={setPassword}
-              placeholderTextColor="#9CA3AF"
-              placeholder="Enter your password"
-              secureTextEntry
-              className="border border-neutral-300 text-black bg-gray-100 p-3 rounded-lg"
-            />
-          </View>
-
-          {/* Sign In Button */}
-          <View className="mt-2">
-            <TouchableOpacity
-              disabled={loading}
-              onPress={handleLogin}
-              className={`bg-[#4D7380] ${loading || (isLoading && "bg-gray-400")} p-3 rounded-lg`}
-            >
-              <CustomText className="text-white font-inter-bold text-center text-base">
-                {loading || isLoading ? "Signing in...." : "Sign In"}
-              </CustomText>
-            </TouchableOpacity>
-          </View>
+        {/* Username/Email Field */}
+        <View className="space-y-2">
+          <CustomText className="font-inter-bold  text-neutral-500">
+            Username or email
+          </CustomText>
+          <TextInput
+            value={username}
+            onChangeText={setUsername}
+            placeholderTextColor="#9CA3AF"
+            placeholder="Enter your username or email"
+            className="border border-neutral-300 text-black bg-gray-100 p-3 rounded-lg"
+          />
         </View>
-      </ScrollView>
+
+        {/* Password Field */}
+        <View className="space-y-2">
+          <CustomText className="font-inter-bold text-neutral-500">
+            Password
+          </CustomText>
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholderTextColor="#9CA3AF"
+            placeholder="Enter your password"
+            secureTextEntry
+            className="border border-neutral-300 text-black bg-gray-100 p-3 rounded-lg"
+          />
+        </View>
+
+        {/* Sign In Button */}
+        <View className="mt-2">
+          <TouchableOpacity
+            disabled={loading}
+            onPress={handleLogin}
+            className={`bg-[#4D7380] ${loading || (isLoading && "bg-gray-400")} p-3 rounded-lg`}
+          >
+            <CustomText className="text-white font-inter-bold text-center text-base">
+              {loading || isLoading ? "Signing in...." : "Sign In"}
+            </CustomText>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
