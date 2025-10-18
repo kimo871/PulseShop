@@ -10,6 +10,12 @@ PulseShop is a secure mobile e-commerce application built with React Native. It 
 - **Superadmin Controls**: Designated users can delete products
 - **Modern UI**: Clean, responsive design with pull-to-refresh
 
+  ### ⚠️ IMPORTANT: Environment Setup
+**You MUST create a `.env` file in the project root with these variables:**
+
+EXPO_PUBLIC_BASE_URL='https://dummyjson.com'
+EXPO_PUBLIC_ADMIN_USERNAME={any username you prefer}
+
 ## 🛠 Tech Stack
 
 - **React Native** with TypeScript
@@ -39,13 +45,12 @@ cd PulseShop
 2. **Install Required Packages**
 npm install
 
-3. **Create Env File At root of the project**
 
-4. **Prebuild Platform Files**
+3. **Prebuild Platform Files**
 android -> npx expo prebuild --platform android --clean
 ios -> npx expo prebuild --platform ios --clean
 
-5. **Run Build**
+4. **Run Build**
 android -> npm run android
 ios -> npm run ios
 
