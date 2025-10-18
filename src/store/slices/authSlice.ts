@@ -4,6 +4,7 @@ const initialState = {
   user: null,
   token: null,
   isAuthenticated: false,
+  isSuperAdmin : false,
   isLoading: false,
   error: null,
 };
@@ -21,12 +22,15 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
+      state.isSuperAdmin = action.payload.user.username==process.env.EXPO_PUBLIC_ADMIN_USERNAME
       state.token = action.payload.token;
       state.error = null;
+  
     },
     loginFailure: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.isAuthenticated = false;
+      state.isSuperAdmin = false;
       state.user = null;
       state.token = null;
       state.error = action.payload;
@@ -36,6 +40,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.token = null;
+      state.isSuperAdmin = false;
       state.isAuthenticated = false;
       state.isLoading = false;
       state.error = null;

@@ -1,7 +1,7 @@
 import { MmkvStorage } from "../../core/storage";
+import ApiConfig from "../config";
 
 // api/auth/index.ts
-const BASE_URL: string = process.env.EXPO_BASE_URL || "https://dummyjson.com"; // fallback if not read from .env (in production env will not expose it just for explain)
 
 export const authApi = {
   getCurrentUser: async () => {
@@ -10,7 +10,7 @@ export const authApi = {
       if (!token) {
         throw new Error("No authentication token found");
       }
-      const response = await fetch(`${BASE_URL}/auth/me`, {
+      const response = await fetch(`${ApiConfig.BASE_URL}/auth/me`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -37,7 +37,8 @@ export const authApi = {
   },
   login: async (credentials: any): Promise<any> => {
     try {
-      const response = await fetch(`${BASE_URL}/auth/login`, {
+      console.log(ApiConfig.BASE_URL)
+      const response = await fetch(`${ApiConfig.BASE_URL}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

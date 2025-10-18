@@ -5,11 +5,10 @@ import { categoriesApi } from "../../api/categories";
 import { useEffect, useState } from "react";
 import { productsApi } from "../../api/products";
 import { categoryIcons } from "../../utils/icons/categoryIcons";
-import ProductSkeleton from "../../components/ui/product/ProductSkeleton";
-import Product from "../../components/ui/product/Product";
+import ProductSkeleton from "../../components/product/ProductSkeleton";
+import Product from "../../components/product/Product";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header";
-
 
 export default function CategoriesScreen() {
   const { user } = useSelector((state) => state?.auth);
