@@ -1,16 +1,18 @@
-import { View, Image, ScrollView } from "react-native";
+import { View, Image, ScrollView, RefreshControl } from "react-native";
 import CustomText from "../../components/ui/CustomText";
 import CustomTextInput from "../../components/ui/CustomeTextInput";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import Product from "../../components/product/Product";
 import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "../../api/products";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import ProductSkeleton from "../../components/product/ProductSkeleton";
 import Header from "../../components/Header";
 import { useSelector } from "react-redux";
+import { queryClient } from "../../lib/client";
 
 export default function HomeScreen() {
+  const [refreshing, setRefreshing] = useState(false);
   const { user, isSuperAdmin } = useSelector((state) => state?.auth);
   const [searchTerm, setSearchTerm] = useState("");
   const [deboucedSearch, setDebouncedSearch] = useState("");
@@ -21,7 +23,7 @@ export default function HomeScreen() {
   }, [searchTerm]);
 
   // fetching products with various states handled by react-query
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["products", deboucedSearch],
     queryFn: () => productsApi.getProducts(deboucedSearch),
   });
@@ -34,6 +36,14 @@ export default function HomeScreen() {
   if (error) {
     console.log(error);
   }
+
+  const onRefresh = useCallback(async () => {
+    try {
+      await refetch?.();
+    } catch (err) {
+      console.log(err);
+    }
+  }, [refetch, queryClient]);
 
   useEffect(() => {
     console.log(
@@ -48,6 +58,14 @@ export default function HomeScreen() {
         paddingBottom: 10,
       }}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={["#4D7380"]}
+          tintColor="#4D7380"
+        />
+      }
     >
       <View className="px-4 py-6 flex-col gap-6">
         <View className="flex-row justify-between items-center pb-4">

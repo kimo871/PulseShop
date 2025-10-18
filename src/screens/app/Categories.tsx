@@ -1,16 +1,24 @@
-import { View, Image, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
 import CustomText from "../../components/ui/CustomText";
 import { useQuery } from "@tanstack/react-query";
 import { categoriesApi } from "../../api/categories";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { productsApi } from "../../api/products";
 import { categoryIcons } from "../../utils/icons/categoryIcons";
 import ProductSkeleton from "../../components/product/ProductSkeleton";
 import Product from "../../components/product/Product";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header";
+import { queryClient } from "../../lib/client";
 
 export default function CategoriesScreen() {
+  const [refreshing, setRefreshing] = useState(false);
   const { user } = useSelector((state) => state?.auth);
   // state for tracking selected category
   const [selectedCategory, setSelectedCategory] = useState<string>("");
@@ -19,6 +27,7 @@ export default function CategoriesScreen() {
     data: categoriesData,
     isLoading: loadingCategories,
     error: errorCategories,
+    refetch: refetchCategories,
   } = useQuery({
     queryKey: ["categories"],
     queryFn: categoriesApi.getCategroies,
@@ -40,6 +49,7 @@ export default function CategoriesScreen() {
     data: productsData,
     isLoading: loadingProducts,
     error: errorProducts,
+    refetch: refetchProducts,
   } = useQuery({
     queryKey: ["productsByCategory", selectedCategory],
     queryFn: () => productsApi.getProductsByCategory(selectedCategory),
@@ -48,6 +58,15 @@ export default function CategoriesScreen() {
   if (productsData) {
     console.log(productsData);
   }
+
+  const onRefresh = useCallback(async () => {
+    try {
+      await Promise.all([refetchProducts?.(),refetchCategories?.()])
+    } catch (err) {
+      console.log(err);
+    }
+  }, [refetchProducts,refetchCategories,queryClient]);
+
   return (
     <ScrollView
       contentContainerStyle={{
@@ -56,6 +75,14 @@ export default function CategoriesScreen() {
       }}
       className="px-4 py-2  w-full"
       showsVerticalScrollIndicator={true}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={["#4D7380"]} 
+          tintColor="#4D7380"
+        />
+      }
     >
       <View className=" py-4 flex-col gap-6">
         <View className="flex-row justify-between items-center pb-4">
