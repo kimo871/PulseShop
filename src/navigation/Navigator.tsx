@@ -1,15 +1,48 @@
-import React from 'react';
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AppTabs from './AppTabs';
-import AuthStack from './AuthStack';
-import { useSelector } from 'react-redux';
+// RootNavigator.tsx (Simplified)
+import React, { useEffect, useState } from "react";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import AppTabs from "./AppTabs";
+import AuthStack from "./AuthStack";
+import { MmkvStorage } from "../core/storage";
+import { authApi } from "../api/auth";
+import LoadingScreen from "../components/ui/LoadingScreen";
+import { loginFailure, loginSuccess } from "../store/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
-  const { isAuthenticated} = useSelector((state)=> state?.auth); // just dummy flag for testing purposes
-  console.log("state",isAuthenticated)
+  const [isLoading, setIsLoading] = useState(true);
+  const {isAuthenticated} = useSelector((state)=>state?.auth);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = await MmkvStorage.getItem("USER_TOKEN");
+        if (token) {
+          const user = await authApi.getCurrentUser();
+          dispatch(
+            loginSuccess({
+              user: user,
+              token,
+            })
+          );
+        }
+      } catch (error) {
+            dispatch(loginFailure(null));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <NavigationContainer theme={DefaultTheme}>

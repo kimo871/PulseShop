@@ -1,21 +1,37 @@
+import ApiConfig from "../config";
+
 // api/products/index.ts
-const BASE_URL: string = process.env.EXPO_BASE_URL || "https://dummyjson.com"; // fallback if not read from .env (in production env will not expose it just for explain)
 
 export const productsApi = {
   getProducts: async (search?: string) => {
     const res = await fetch(
-      `${BASE_URL}/products${search && `/search?q=${search}`}`
+      `${ApiConfig.BASE_URL}/products${search && `/search?q=${search}`}`
     ).then((res) => res.json());
     return res;
   },
 
   getProductById: (id: string) =>
-    fetch(`${BASE_URL}/products/${id}`).then((res) => res.json()),
+    fetch(`${ApiConfig.BASE_URL}/products/${id}`).then((res) => res.json()),
 
   getProductsByCategory: async (category: string) => {
-    const res = await fetch(`${BASE_URL}/products/category/${category}`).then(
-      (res) => res.json()
-    );
+    const res = await fetch(
+      `${ApiConfig.BASE_URL}/products/category/${category}`
+    ).then((res) => res.json());
     return res;
+  },
+  deleteProductById: async (productId: number) => {
+    try {
+      const res = await fetch(`${ApiConfig.BASE_URL}/products/${productId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      console.log(data)
+      return data;
+    } catch (err) {
+      throw new Error("Error deleting product.");
+    }
   },
 };

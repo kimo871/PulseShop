@@ -1,7 +1,10 @@
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { TouchableOpacity, View, Image } from "react-native";
+import { TouchableOpacity, View, Image, Alert } from "react-native";
 import { faStar, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import CustomText from "../CustomText";
+import CustomText from "../ui/CustomText";
+import { productsApi } from "../../api/products";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "../../lib/client";
 
 type ProductProps = {
   id: number;
@@ -16,13 +19,73 @@ type ProductProps = {
   availabilityStatus: string;
 };
 
+type ConfigProps = {
+  isSuperAdmin: boolean;
+};
+
 export default function Product({
   product,
   width,
+  config = { isSuperAdmin: false },
 }: {
   product: ProductProps;
+  config?: ConfigProps;
   width?: string;
 }) {
+  // delete mutation for invalidating all cached queries with products
+  const mutationDelete = useMutation({
+    mutationFn: () => productsApi.deleteProductById(product?.id),
+    onMutate: async () => {
+      // 1) invalidate products query
+      await queryClient.cancelQueries({ queryKey: ["products"] });
+
+      // 2) Here we loop over all query keys contain products that actually contain the target product
+      queryClient.setQueriesData(
+        { queryKey: ["products"] }, 
+        (old: any) => {
+          if (old?.products?.some((p: any) => p.id === product.id)) {
+            return {
+              ...old,
+              products: old.products.filter((p: any) => p.id !== product.id),
+              total: (old.total || 0) - 1,
+            };
+          }
+          return old;
+        }
+      );
+
+      return {
+        previousProducts: queryClient.getQueriesData({
+          queryKey: ["products"],
+        }),
+      };
+    },
+    onError: (err, variables, context) => {
+      // revert  products queries
+      context?.previousProducts?.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+    },
+  });
+
+  // delete product handler
+  const handleDelete = () => {
+    console.log("delete action pressed");
+    Alert.alert(
+      "Delete",
+      `Are you sure you want to delete ${product?.title}?`,
+      [
+        { text: "No,Keep Product", style: "cancel" },
+        {
+          text: "Yes,Delete it",
+          onPress: () => {
+            mutationDelete.mutate();
+            console.log("deleted.....");
+          },
+        },
+      ]
+    );
+  };
   return (
     <View
       className={` bg-white rounded-xl shadow-lg shadow-neutral-200/80 border border-neutral-200 p-0 ${width ? width : "w-[49%]"} mb-4 `}
@@ -36,11 +99,6 @@ export default function Product({
           resizeMode="cover"
           className="w-full h-full rounded-xl mt-2"
         />
-
-        {/* Favorite Button */}
-        {/* <TouchableOpacity className="absolute top-2 right-2 bg-white/90 w-6 h-6 rounded-full items-center justify-center shadow-sm">
-          <FontAwesomeIcon color="#64748b" icon={faHeart} size={14} />
-        </TouchableOpacity> */}
       </View>
 
       {/* Product Content */}
@@ -93,11 +151,16 @@ export default function Product({
           </View>
 
           {/* Action Buttons */}
-          <View className="flex-row space-x-2">
-            <TouchableOpacity className="bg-red-50 w-9 h-9 rounded-lg items-center justify-center border border-red-100">
-              <FontAwesomeIcon color="#dc2626" icon={faTrashAlt} size={14} />
-            </TouchableOpacity>
-          </View>
+          {config?.isSuperAdmin && (
+            <View className="flex-row space-x-2">
+              <TouchableOpacity
+                onPress={handleDelete}
+                className="bg-red-50 w-9 h-9 rounded-lg items-center justify-center border border-red-100"
+              >
+                <FontAwesomeIcon color="#dc2626" icon={faTrashAlt} size={14} />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* Quick Status */}

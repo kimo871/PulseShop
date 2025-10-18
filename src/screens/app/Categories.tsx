@@ -5,23 +5,13 @@ import { categoriesApi } from "../../api/categories";
 import { useEffect, useState } from "react";
 import { productsApi } from "../../api/products";
 import { categoryIcons } from "../../utils/icons/categoryIcons";
-import ProductSkeleton from "../../components/ui/product/ProductSkeleton";
-import Product from "../../components/ui/product/Product";
-
-const DummyProduct = {
-  title: "Modern Ergonomic Chair",
-  category: "FURNITURE",
-  rating: 4.8,
-  thumbnail:
-    "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
-  description: "Luxury executive arm chair with premium finish",
-  stock: 32,
-  discountPercentage: 10,
-  price: 100,
-  availabilityStatus: "In Stock",
-};
+import ProductSkeleton from "../../components/product/ProductSkeleton";
+import Product from "../../components/product/Product";
+import { useSelector } from "react-redux";
+import Header from "../../components/Header";
 
 export default function CategoriesScreen() {
+  const { user } = useSelector((state) => state?.auth);
   // state for tracking selected category
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   // query for getting categories
@@ -68,42 +58,12 @@ export default function CategoriesScreen() {
       showsVerticalScrollIndicator={true}
     >
       <View className=" py-4 flex-col gap-6">
-        <View className="flex-row justify-between items-center pb-4 ">
-          {/* Text Content */}
-          <View className="flex-1 pr-4">
-            <CustomText className="text-neutral-400 font-inter-medium text-sm uppercase tracking-wider mb-1">
-              Welcome Back
-            </CustomText>
-            <CustomText className="text-neutral-800 font-inter-black text-2xl leading-8">
-              Discover The Best{"\n"}Marketplace
-            </CustomText>
-            <CustomText className="text-neutral-500 font-inter-regular text-sm mt-2">
-              Find quality products from trusted sellers
-            </CustomText>
-          </View>
-
-          {/* Enhanced Profile Section */}
-          <View className="flex-col items-end">
-            {/* Profile Image with Status Indicator */}
-            <View className="relative">
-              <View className="rounded-2xl border-2 border-white w-16 h-16 overflow-hidden shadow-lg shadow-neutral-300">
-                <Image
-                  source={{
-                    uri: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1170",
-                  }}
-                  resizeMode="cover"
-                  className="w-full h-full"
-                />
-              </View>
-              {/* Online Status Indicator */}
-              <View className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></View>
-            </View>
-
-            {/* User Name */}
-            <CustomText className="text-neutral-700 font-inter-medium text-sm mt-2 text-center">
-              Sarah M.
-            </CustomText>
-          </View>
+        <View className="flex-row justify-between items-center pb-4">
+          <Header
+            firstName={user?.firstName}
+            lastName={user?.lastName}
+            image={user?.image}
+          />
         </View>
         <View className="">
           {/* Categories Header */}
@@ -202,7 +162,7 @@ export default function CategoriesScreen() {
             ) : (
               <View className="flex-row flex-wrap justify-between w-full">
                 {Array.isArray(productsData?.products) &&
-                  productsData?.products?.map((product:any) => (
+                  productsData?.products?.map((product: any) => (
                     <Product key={product.id} product={product} />
                   ))}
               </View>

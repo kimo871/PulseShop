@@ -6,13 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faHome,
   faGrip,
-  faShoppingBag,
   faRightFromBracket,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 
 import HomeScreen from "../screens/app/Home";
-import ProductsScreen from "../screens/app/Products";
 import CategoriesScreen from "../screens/app/Categories";
 import { Alert, View } from "react-native";
 import { useDispatch } from "react-redux";
@@ -56,7 +54,6 @@ export default function AppTabs() {
         >
           <Tab.Screen name="Home" component={HomeScreen} />
           <Tab.Screen name="Categories" component={CategoriesScreen} />
-          <Tab.Screen name="Favorites" component={ProductsScreen} />
           {/* Logout tab (disable immediate navigation just functionality of clearing session and reset to login) */}
           <Tab.Screen
             name="Logout"
