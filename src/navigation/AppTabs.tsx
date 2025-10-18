@@ -6,13 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import {
   faHome,
   faGrip,
-  faShoppingBag,
   faRightFromBracket,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
 
 import HomeScreen from "../screens/app/Home";
-import ProductsScreen from "../screens/app/Products";
 import CategoriesScreen from "../screens/app/Categories";
 import { Alert, View } from "react-native";
 import { useDispatch } from "react-redux";

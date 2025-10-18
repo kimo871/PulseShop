@@ -10,18 +10,6 @@ import Product from "../../components/ui/product/Product";
 import { useSelector } from "react-redux";
 import Header from "../../components/Header";
 
-const DummyProduct = {
-  title: "Modern Ergonomic Chair",
-  category: "FURNITURE",
-  rating: 4.8,
-  thumbnail:
-    "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
-  description: "Luxury executive arm chair with premium finish",
-  stock: 32,
-  discountPercentage: 10,
-  price: 100,
-  availabilityStatus: "In Stock",
-};
 
 export default function CategoriesScreen() {
   const { user } = useSelector((state) => state?.auth);

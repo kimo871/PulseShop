@@ -1,6 +1,5 @@
 import { CategoryIcon } from './types';
 
-// Complete mapping based on your file names
 export const categoryIcons: Record<CategoryIcon, any> = {
   // Beauty & Personal Care
   'beauty': require('../../../assets/icons/categories/beauty.png'),

@@ -15,19 +15,15 @@ const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
   const [isLoading, setIsLoading] = useState(true);
-  const {isAuthenticated,token:token2} = useSelector((state)=>state?.auth);
+  const {isAuthenticated} = useSelector((state)=>state?.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log(token2)
-        // Your auth check logic here
         const token = await MmkvStorage.getItem("USER_TOKEN");
-        console.log("ee", token);
         if (token) {
           const user = await authApi.getCurrentUser();
-          console.log("dd", user);
           dispatch(
             loginSuccess({
               user: user,
@@ -36,12 +32,11 @@ export default function RootNavigator() {
           );
         }
       } catch (error) {
-            dispatch(loginFailure("Session expired or invalid"));
+            dispatch(loginFailure(null));
       } finally {
         setIsLoading(false);
       }
     };
-
     checkAuth();
   }, []);
 
