@@ -10,15 +10,21 @@ import LoadingScreen from "../components/ui/LoadingScreen";
 import { loginFailure, loginSuccess } from "../store/slices/authSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
+import useNetworkStatus from "../core/hooks/useNetworkStatus";
+import OfflineBanner from "../components/ui/OfflineBanner";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
+  const { isConnected } = useNetworkStatus();
   const [isLoading, setIsLoading] = useState(true);
-  const {isAuthenticated} = useSelector((state)=>state?.auth);
+  const { isAuthenticated } = useSelector((state) => state?.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log("connected staatus:", isConnected);
     const checkAuth = async () => {
       try {
         const token = await MmkvStorage.getItem("USER_TOKEN");
@@ -32,7 +38,7 @@ export default function RootNavigator() {
           );
         }
       } catch (error) {
-            dispatch(loginFailure(null));
+        dispatch(loginFailure(null));
       } finally {
         setIsLoading(false);
       }
@@ -46,6 +52,11 @@ export default function RootNavigator() {
 
   return (
     <NavigationContainer theme={DefaultTheme}>
+      <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
+        <StatusBar style="light"/>
+      {!isConnected && (
+          <OfflineBanner />
+      )}
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
           <Stack.Screen name="App" component={AppTabs} />
@@ -53,6 +64,7 @@ export default function RootNavigator() {
           <Stack.Screen name="Auth" component={AuthStack} />
         )}
       </Stack.Navigator>
+      </SafeAreaView>
     </NavigationContainer>
   );
 }

@@ -33,7 +33,6 @@ export default function AppTabs() {
   });
   return (
     <GlobalActivityBoundary resetLockTimer={resetLockTimer}>
-      <SafeAreaView style={{ flex: 1 }} edges={["top", "left", "right"]}>
         <Tab.Navigator
           initialRouteName="Home"
           screenOptions={({ route }) => ({
@@ -86,7 +85,6 @@ export default function AppTabs() {
             }}
           />
         </Tab.Navigator>
-      </SafeAreaView>
     </GlobalActivityBoundary>
   );
 }
