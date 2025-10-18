@@ -22,7 +22,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.isAuthenticated = true;
       state.user = action.payload.user;
-      state.isSuperAdmin = action.payload.user.username==process.env.EXPO_PUBLIC_ADMIN_USERNAME
+      state.isSuperAdmin = action.payload.user.username==(process.env.EXPO_PUBLIC_ADMIN_USERNAME || 'emilys')
       state.token = action.payload.token;
       state.error = null;
   
